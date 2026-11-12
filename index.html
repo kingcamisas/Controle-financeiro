@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Controle de Dívidas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+ <div class="top">
+  <div><h1>Controle de dívidas</h1><small id="st" style="color:var(--mu)"></small></div>
+  <div class="bar">
+   <button class="pri" id="novo">Nova dívida</button>
+   <button id="bk">Backup / importar</button>
+   <button id="tema" aria-label="Alternar tema">Tema</button>
+  </div>
+ </div>
+ <div class="top">
+  <div class="year"><button id="ant" aria-label="Ano anterior">‹</button><span id="ano"></span><button id="prox" aria-label="Próximo ano">›</button></div>
+  <div class="renda"><input id="rnome" maxlength="40" placeholder="Nome da renda (ex.: Salário)" aria-label="Nome da renda" style="width:200px"><label class="renda" style="gap:6px">Valor mensal <input id="renda" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"></label></div>
+ </div>
+ <section class="sum" id="sum"></section>
+ <section class="panel"><div class="chart"><canvas id="cv" aria-label="Gráfico de dívidas por mês" role="img"></canvas></div></section>
+ <section class="meses" id="meses"></section>
+ <section class="panel"><h2 id="mt"></h2><div id="lista"></div><div class="tot" id="tot"></div></section>
+ <section class="panel"><div class="top" style="margin:0"><h2>Metas e compras planejadas</h2><button id="nmeta">Nova meta</button></div><div id="lm"></div></section>
+ <section class="panel"><div class="top" style="margin:0 0 8px"><h2>Banco, cofrinhos e entradas</h2><div class="bar"><button id="nk">Novo cofrinho</button><button id="nent">Nova entrada</button><button id="dep">Depositar</button><button id="ret">Retirar</button><button id="trf">Transferir</button></div></div><div class="sum" id="cs"></div><div id="lc"></div></section>
+</main>
+
+<dialog id="dlg">
+ <form id="fm" method="dialog">
+  <h2 id="dt">Nova dívida</h2>
+  <label class="f">Nome<input id="fn" required maxlength="60"></label>
+  <label class="f">Valor (R$)<input id="fv" type="number" min="0.01" step="0.01" inputmode="decimal" required></label>
+  <label class="f">Tipo<select id="ft"><option value="fixa">Fixa (todo mês)</option><option value="parcelada">Parcelada</option><option value="unica">Única (um mês só)</option></select></label>
+  <label class="f"><span id="li">Começa em</span><input id="fi" type="month" required></label>
+  <label class="f" id="wf"><span id="lf">Termina em (opcional)</span><input id="ff" type="month"></label>
+  <label class="f" id="wp" hidden>Número de parcelas<input id="fp" type="number" min="1" max="360" value="2"></label>
+  <p id="rs" style="color:var(--mu);margin:0" hidden></p>
+  <p id="ok" style="color:var(--ok);margin:10px 0 0" hidden></p>
+  <div class="acts"><button type="button" id="cx">Fechar</button><button type="button" id="mais">Salvar e adicionar outra</button><button class="pri" type="submit">Salvar</button></div>
+ </form>
+</dialog>
+
+<dialog id="dbk">
+ <h2>Backup e importação</h2>
+ <p style="color:var(--mu);margin:6px 0">Copie o texto abaixo para guardar seus dados. Para importar, cole aqui o conteúdo do seu backup ou do antigo dividas.json e clique em Importar.</p>
+ <textarea id="tx" spellcheck="false"></textarea>
+ <input type="file" id="fl" accept=".json,application/json" style="margin-top:8px">
+ <div class="acts"><button id="cp">Copiar</button><button class="pri" id="im">Importar</button><button id="fc">Fechar</button></div>
+ <p id="msg" style="color:var(--mu);margin:8px 0 0"></p>
+</dialog>
+<dialog id="dg"><form id="fg" method="dialog"><h2 id="gdt">Nova meta</h2>
+ <label class="f">O que você quer comprar<input id="gn" required maxlength="60" placeholder="Ex.: Moto"></label>
+ <label class="f">Como pagar<select id="gm"><option value="parc">Parcelado</option><option value="avista">À vista (juntando em um cofrinho)</option></select></label>
+ <label class="f" id="gwc" hidden>Juntar em<select id="gc"></select></label>
+ <label class="f">Valor total (R$)<input id="gt" type="number" min="0.01" step="0.01" inputmode="decimal" required></label>
+ <label class="f">Entrada ou valor já separado (opcional)<input id="ge" type="number" min="0" step="0.01" inputmode="decimal"></label>
+ <label class="f" id="gwp">Parcela que cabe por mês (R$)<input id="gp" type="number" min="0.01" step="0.01" inputmode="decimal" required></label>
+ <label class="f" id="gwj">Juros ao mês, % (opcional)<input id="gj" type="number" min="0" step="0.01" inputmode="decimal"></label>
+ <label class="f">Folga mínima da renda, %<input id="gg" type="number" min="0" max="100" step="1" value="10"></label>
+ <p id="gerr" style="color:var(--bad);margin:8px 0 0" hidden></p>
+ <div class="acts"><button type="button" id="gcx">Cancelar</button><button class="pri" type="submit">Salvar meta</button></div></form></dialog>
+<dialog id="de"><form id="fe" method="dialog"><h2 id="edt">Nova entrada</h2>
+ <label class="f">Nome da entrada<input id="en" required maxlength="60" placeholder="Ex.: 13º salário"></label>
+ <label class="f">Valor (R$)<input id="ev" type="number" min="0.01" step="0.01" inputmode="decimal" required></label>
+ <label class="f">Tipo<select id="et"><option value="unica">Única (um mês só)</option><option value="fixa">Todo mês</option></select></label>
+ <label class="f"><span id="eli">Mês da entrada</span><input id="ei" type="month" required></label>
+ <label class="f" id="ewf" hidden>Termina em (opcional)<input id="ef" type="month"></label>
+ <div class="acts"><button type="button" id="ecx">Cancelar</button><button class="pri" type="submit">Salvar</button></div></form></dialog>
+<dialog id="dc"><form id="fmv" method="dialog"><h2 id="cdt">Depositar</h2>
+ <label class="f">Tipo<select id="mtp"><option value="dep">Depósito (entra dinheiro)</option><option value="ret">Retirada (sai dinheiro)</option><option value="trf">Transferência entre contas</option></select></label>
+ <label class="f"><span id="mcl">Conta</span><select id="mco"></select></label>
+ <label class="f" id="mwp" hidden>Para<select id="mpa"></select></label>
+ <label class="f">Valor (R$)<input id="mval" type="number" min="0.01" step="0.01" inputmode="decimal" required></label>
+ <label class="f">Mês<input id="ci" type="month" required></label>
+ <label class="f">Anotação (opcional)<input id="cn" maxlength="60"></label>
+ <p id="cerr" style="color:var(--bad);margin:8px 0 0" hidden></p>
+ <div class="acts"><button type="button" id="ccx">Cancelar</button><button class="pri" type="submit">Salvar</button></div></form></dialog>
+<dialog id="dk"><form id="fk" method="dialog"><h2 id="kdt">Novo cofrinho</h2>
+ <label class="f">Nome do cofrinho<input id="kn" required maxlength="40" placeholder="Ex.: Moto, Reserva, Viagem"></label>
+ <div class="acts"><button type="button" id="kcx">Cancelar</button><button class="pri" type="submit">Salvar</button></div></form></dialog>
+<div id="toast"><span id="tm"></span><button id="un">Desfazer</button></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
