@@ -26,8 +26,8 @@
  <section class="panel"><div class="chart"><canvas id="cv" aria-label="Gráfico de dívidas por mês" role="img"></canvas></div></section>
  <section class="meses" id="meses"></section>
  <section class="panel"><h2 id="mt"></h2><div id="lista"></div><div class="tot" id="tot"></div></section>
- <section class="panel"><div class="top" style="margin:0"><h2>Metas e compras planejadas</h2><button id="nmeta">Nova meta</button></div><div id="lm"></div></section>
- <section class="panel"><div class="top" style="margin:0 0 8px"><h2>Banco, cofrinhos e entradas</h2><div class="bar"><button id="nk">Novo cofrinho</button><button id="nent">Nova entrada</button><button id="dep">Depositar</button><button id="ret">Retirar</button><button id="trf">Transferir</button></div></div><div class="sum" id="cs"></div><div id="lc"></div></section>
+ <section class="panel"><div class="top" style="margin:0"><h2>Metas e compras planejadas</h2><button id="nmeta">Nova meta</button></div><small style="color:var(--mu)">Cada meta é analisada sozinha: o mesmo saldo pode aparecer em mais de uma.</small><div id="lm"></div></section>
+ <section class="panel"><div class="top" style="margin:0 0 8px"><h2>Bancos, cofrinhos e entradas</h2><div class="bar"><button id="nb">Novo banco</button><button id="nk">Novo cofrinho</button><button id="nent">Nova entrada</button><button id="dep">Depositar</button><button id="ret">Retirar</button><button id="trf">Transferir</button></div></div><div class="sum" id="cs"></div><div id="lc"></div></section>
 </main>
 
 <dialog id="dlg">
@@ -55,13 +55,12 @@
 </dialog>
 <dialog id="dg"><form id="fg" method="dialog"><h2 id="gdt">Nova meta</h2>
  <label class="f">O que você quer comprar<input id="gn" required maxlength="60" placeholder="Ex.: Moto"></label>
- <label class="f">Como pagar<select id="gm"><option value="parc">Parcelado</option><option value="avista">À vista (juntando em um cofrinho)</option></select></label>
- <label class="f" id="gwc" hidden>Juntar em<select id="gc"></select></label>
+ <label class="f">Como pagar<select id="gm"><option value="parc">Parcelado</option><option value="avista">À vista (de uma vez, no mês da compra)</option></select></label>
  <label class="f">Valor total (R$)<input id="gt" type="number" min="0.01" step="0.01" inputmode="decimal" required></label>
- <label class="f">Entrada ou valor já separado (opcional)<input id="ge" type="number" min="0" step="0.01" inputmode="decimal"></label>
+ <label class="f" id="gwe">Entrada (opcional)<input id="ge" type="number" min="0" step="0.01" inputmode="decimal"></label>
  <label class="f" id="gwp">Parcela que cabe por mês (R$)<input id="gp" type="number" min="0.01" step="0.01" inputmode="decimal" required></label>
  <label class="f" id="gwj">Juros ao mês, % (opcional)<input id="gj" type="number" min="0" step="0.01" inputmode="decimal"></label>
- <label class="f">Folga mínima da renda, %<input id="gg" type="number" min="0" max="100" step="1" value="10"></label>
+ <label class="f">Folga mínima que você quer manter no mês (R$)<input id="gg" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label>
  <p id="gerr" style="color:var(--bad);margin:8px 0 0" hidden></p>
  <div class="acts"><button type="button" id="gcx">Cancelar</button><button class="pri" type="submit">Salvar meta</button></div></form></dialog>
 <dialog id="de"><form id="fe" method="dialog"><h2 id="edt">Nova entrada</h2>
@@ -81,7 +80,9 @@
  <p id="cerr" style="color:var(--bad);margin:8px 0 0" hidden></p>
  <div class="acts"><button type="button" id="ccx">Cancelar</button><button class="pri" type="submit">Salvar</button></div></form></dialog>
 <dialog id="dk"><form id="fk" method="dialog"><h2 id="kdt">Novo cofrinho</h2>
- <label class="f">Nome do cofrinho<input id="kn" required maxlength="40" placeholder="Ex.: Moto, Reserva, Viagem"></label>
+ <label class="f">Nome<input id="kn" required maxlength="40" placeholder="Ex.: Nubank, Caixa, Moto, Reserva"></label>
+ <label class="f">Tipo<select id="kt"><option value="banco">Banco (dinheiro disponível)</option><option value="cofrinho">Cofrinho</option></select></label>
+ <label class="f" id="kwu" hidden>Uso do cofrinho<select id="ku"><option value="juntar">Só para juntar dinheiro (não usar em compras)</option><option value="fluxo">De fluxo (pode usar em compras)</option></select></label>
  <div class="acts"><button type="button" id="kcx">Cancelar</button><button class="pri" type="submit">Salvar</button></div></form></dialog>
 <div id="toast"><span id="tm"></span><button id="un">Desfazer</button></div>
 
